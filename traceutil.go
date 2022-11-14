@@ -29,7 +29,7 @@ func PutRequestId(c *gin.Context) {
 	if userAgent == "" {
 		userAgent = c.GetHeader("User-Agent")
 	}
-	mgcache.OnGetCache("UserAgent").Add(requestId, userAgent, time.Minute)
+	mgcache.OnGetCache("UserAgent").Add(routineId, userAgent, time.Minute)
 }
 
 func GetRequestId() string {
