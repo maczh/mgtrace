@@ -31,7 +31,7 @@ func PutRequestId(c *gin.Context) {
 	if headers["X-User-Agent"] == "" {
 		headers["X-User-Agent"] = headers["User-Agent"]
 	}
-	mgcache.OnGetCache("Header").Add(routineId, toJSON(headers), 5*time.Minute)
+	mgcache.OnGetCache("Header").Add(routineId, headers, 5*time.Minute)
 	//userAgent := c.GetHeader("X-User-Agent")
 	//if userAgent == "" {
 	//	userAgent = c.GetHeader("User-Agent")
@@ -42,8 +42,7 @@ func PutRequestId(c *gin.Context) {
 func GetRequestId() string {
 	headers, found := mgcache.OnGetCache("Header").Value(GetGID())
 	if found {
-		h := make(map[string]string)
-		fromJSON(headers.(string), &h)
+		h := headers.(map[string]string)
 		return h["X-Request-Id"]
 	} else {
 		return ""
@@ -53,8 +52,7 @@ func GetRequestId() string {
 func GetClientIp() string {
 	headers, found := mgcache.OnGetCache("Header").Value(GetGID())
 	if found {
-		h := make(map[string]string)
-		fromJSON(headers.(string), &h)
+		h := headers.(map[string]string)
 		return h["X-Real-IP"]
 	} else {
 		return ""
@@ -64,8 +62,7 @@ func GetClientIp() string {
 func GetUserAgent() string {
 	headers, found := mgcache.OnGetCache("Header").Value(GetGID())
 	if found {
-		h := make(map[string]string)
-		fromJSON(headers.(string), &h)
+		h := headers.(map[string]string)
 		return h["X-User-Agent"]
 	} else {
 		return ""
@@ -75,8 +72,7 @@ func GetUserAgent() string {
 func GetHeader(header string) string {
 	headers, found := mgcache.OnGetCache("Header").Value(GetGID())
 	if found {
-		h := make(map[string]string)
-		fromJSON(headers.(string), &h)
+		h := headers.(map[string]string)
 		return h[header]
 	} else {
 		return ""
