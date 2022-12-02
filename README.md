@@ -28,6 +28,9 @@ go get -u github.com/maczh/mgtrace
 
 	//添加跟踪日志
 	engine.Use(mgtrace.TraceId())
+	
+	//添加所有请求头链路
+	engine.Use(mgtrace.Headers())
 ```
 
 ### 在调用其他微服务时,http header中添加X-Request-Id参数
