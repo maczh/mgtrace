@@ -40,50 +40,31 @@ func PutRequestId(c *gin.Context) {
 }
 
 func GetRequestId() string {
-	headers, found := mgcache.OnGetCache("Header").Value(GetGID())
-	if found {
-		h := headers.(map[string]string)
-		return h["X-Request-Id"]
-	} else {
-		return ""
-	}
+	return GetHeader("X-Request-Id")
 }
 
 func GetClientIp() string {
-	headers, found := mgcache.OnGetCache("Header").Value(GetGID())
-	if found {
-		h := headers.(map[string]string)
-		return h["X-Real-IP"]
-	} else {
-		return ""
-	}
+	return GetHeader("X-Real-IP")
 }
 
 func GetUserAgent() string {
-	headers, found := mgcache.OnGetCache("Header").Value(GetGID())
-	if found {
-		h := headers.(map[string]string)
-		return h["X-User-Agent"]
-	} else {
-		return ""
-	}
+	return GetHeader("X-User-Agent")
 }
 
 func GetHeader(header string) string {
-	headers, found := mgcache.OnGetCache("Header").Value(GetGID())
-	if found {
-		h := headers.(map[string]string)
-		return h[header]
-	} else {
-		return ""
-	}
+	headers := GetHeaders()
+	return headers[header]
 }
 
 func GetHeaders() map[string]string {
 	headers, found := mgcache.OnGetCache("Header").Value(GetGID())
 	if found {
 		h := headers.(map[string]string)
-		return h
+		headersMap := make(map[string]string)
+		for k, v := range h {
+			headersMap[k] = v
+		}
+		return headersMap
 	} else {
 		return map[string]string{}
 	}
