@@ -2,13 +2,12 @@ package mgtrace
 
 import (
 	"bytes"
+	"fmt"
 	"github.com/gin-gonic/gin"
-	jsoniter "github.com/json-iterator/go"
 	"github.com/maczh/mgcache"
 	"math/rand"
 	"runtime"
 	"strconv"
-	"strings"
 	"time"
 )
 
@@ -19,7 +18,6 @@ func PutRequestId(c *gin.Context) {
 		headers["X-Request-Id"] = getRandomHexString(16)
 	}
 	routineId := GetGID()
-	//cache.OnGetCache("RequestId").Add(routineId, requestId, 5*time.Minute)
 	clientIp := c.ClientIP()
 	if c.GetHeader("X-Real-IP") != "" {
 		clientIp = c.GetHeader("X-Real-IP")
@@ -32,11 +30,6 @@ func PutRequestId(c *gin.Context) {
 		headers["X-User-Agent"] = headers["User-Agent"]
 	}
 	mgcache.OnGetCache("Header").Add(routineId, headers, 5*time.Minute)
-	//userAgent := c.GetHeader("X-User-Agent")
-	//if userAgent == "" {
-	//	userAgent = c.GetHeader("User-Agent")
-	//}
-	//cache.OnGetCache("UserAgent").Add(routineId, userAgent, 5*time.Minute)
 }
 
 func GetRequestId() string {
@@ -59,6 +52,7 @@ func GetHeader(header string) string {
 func GetHeaders() map[string]string {
 	headers, found := mgcache.OnGetCache("Header").Value(GetGID())
 	if found {
+		fmt.Printf("headers: %v\n", headers)
 		h := headers.(map[string]string)
 		headersMap := make(map[string]string)
 		for k, v := range h {
@@ -101,28 +95,4 @@ func getHeaders(c *gin.Context) map[string]string {
 		headers[k] = v[0]
 	}
 	return headers
-}
-
-var json = jsoniter.ConfigCompatibleWithStandardLibrary
-
-func toJSON(o interface{}) string {
-	j, err := json.Marshal(o)
-	if err != nil {
-		return "{}"
-	} else {
-		js := string(j)
-		js = strings.Replace(js, "\\u003c", "<", -1)
-		js = strings.Replace(js, "\\u003e", ">", -1)
-		js = strings.Replace(js, "\\u0026", "&", -1)
-		return js
-	}
-}
-
-func fromJSON(j string, o interface{}) *interface{} {
-	err := json.Unmarshal([]byte(j), &o)
-	if err != nil {
-		return nil
-	} else {
-		return &o
-	}
 }
